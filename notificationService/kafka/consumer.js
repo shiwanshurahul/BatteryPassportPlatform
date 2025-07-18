@@ -8,7 +8,7 @@ const kafka = new Kafka({
   });
 const consumer = kafka.consumer({ groupId: 'notification-group' });
 
-const runconsumer = async () => {
+const runconsumer = async () => {       //consumer to subscribe to the topics and get info
   await consumer.connect();
   
   await consumer.subscribe({ topic: 'passport.created', fromBeginning: false });

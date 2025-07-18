@@ -7,10 +7,10 @@ const authenticate = (req, res, next) => {
     return res.status(401).json({ message: "No token provided" });
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(" ")[1];   //Authorization Bearer <token>
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY_);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.user = decoded; // email, id, role
     next();
   } catch (err) {
@@ -18,7 +18,7 @@ const authenticate = (req, res, next) => {
   }
 };
 
-const authorize = (roles = []) => {
+const authorize = (roles = []) => {  //checking for specific role to protect routes e.g. admin only route
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ message: "Forbidden: Insufficient rights" });

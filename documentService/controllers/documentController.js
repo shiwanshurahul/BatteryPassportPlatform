@@ -6,12 +6,12 @@ const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 const { v4: uuidv4 } = require('uuid');
 
-
+//s3 file upload controller
 exports.uploadFile = [
   upload.single('file'),
   async (req, res) => {
     try {
-      if (!req.file) 
+      if (!req.file)  //no file provided
         return res.status(400).json({ message: 'File is required' });
       const key = `${uuidv4()}-${req.file.originalname}`;
       
@@ -40,14 +40,14 @@ exports.uploadFile = [
   }
 ];
 
-
+//get file from s3 based on docId
 exports.getFile = async (req, res) => {
   try {
     const doc = await Document.findById(req.params.docId);
-    if (!doc) 
+    if (!doc) //not docid provided
         return res.status(404).json({ 
-    message: 'Link Not found'
-     });
+          message: 'Link Not found'
+        });
 
     const url = s3.getSignedUrl('getObject', {
       Bucket: process.env.S3_BUCKET,
@@ -66,10 +66,11 @@ exports.getFile = async (req, res) => {
   }
 };
 
+//delete file
 exports.deleteFile = async (req, res) => {
   try {
     const doc = await Document.findByIdAndDelete(req.params.docId);
-    if (!doc) 
+    if (!doc) //no params is provided
         return res.status(404).json({ message: 'Document Not found' });
 
     await s3.deleteObject({

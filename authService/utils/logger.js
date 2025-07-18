@@ -1,6 +1,6 @@
 const winston = require('winston');
 
-//learnt 
+//learnt winston logger technique
 const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
