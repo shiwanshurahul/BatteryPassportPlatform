@@ -7,7 +7,7 @@ const authenticate = (req, res, next) => {
     return res.status(401).json({ message: 'No token provided' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // illegal token
     req.user = decoded;
     next();  //next middlware
   } catch (err) {
@@ -19,7 +19,7 @@ const authenticate = (req, res, next) => {
 };
 
 const authorize = (roles = []) => {
-  return (req, res, next) => {
+  return (req, res, next) => {       //check for admin only middleware 
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ message: 'Forbidden, admin only route' });
     }

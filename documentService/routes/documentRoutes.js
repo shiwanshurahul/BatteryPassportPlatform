@@ -5,6 +5,7 @@ const upload = multer({ dest: 'uploads/' });
 const { authenticate } = require('../middlewares/authMiddleware');
 const docCtrl = require('../controllers/documentController');
 
+//routes to upload, get and delete file
 router.post('/upload', authenticate, docCtrl.uploadFile);
 router.get('/:docId', authenticate, docCtrl.getFile);
 router.delete('/:docId', authenticate, docCtrl.deleteFile);

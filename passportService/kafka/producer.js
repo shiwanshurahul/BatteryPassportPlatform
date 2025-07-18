@@ -9,7 +9,7 @@ const kafka = new Kafka({
   retry: { retries: 5, initialRetryTime: 300 }
 });
 
-const producer = kafka.producer();
+const producer = kafka.producer();  //created producer
 
 const sendKafkaEvent = async (topic, data) => {
   await producer.connect();
