@@ -1,0 +1,281 @@
+openapi: 3.0.0
+info:
+  title: Battery Passport Platform
+  version: 1.0.0
+servers:
+  - url: http://localhost:5001
+    description: Auth Service
+  - url: http://localhost:5002
+    description: Battery Passport Service
+  - url: http://localhost:5003
+    description: Document Service
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    BatteryPassport:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - generalInformation
+            - materialComposition
+            - carbonFootprint
+          properties:
+            generalInformation:
+              type: object
+              required:
+                - batteryIdentifier
+                - batteryModel
+              properties:
+                batteryIdentifier:
+                  type: string
+                batteryModel:
+                  type: object
+                  required: [id, modelName]
+                  properties:
+                    id:
+                      type: string
+                    modelName:
+                      type: string
+                batteryMass:
+                  type: number
+                batteryCategory:
+                  type: string
+                batteryStatus:
+                  type: string
+                manufacturingDate:
+                  type: string
+                  format: date
+                manufacturingPlace:
+                  type: string
+                warrantyPeriod:
+                  type: string
+                manufacturerInformation:
+                  type: object
+                  properties:
+                    manufacturerName: { type: string }
+                    manufacturerIdentifier: { type: string }
+
+            materialComposition:
+              type: object
+              required: [batteryChemistry, criticalRawMaterials, hazardousSubstances]
+              properties:
+                batteryChemistry: { type: string }
+                criticalRawMaterials:
+                  type: array
+                  items: { type: string }
+                hazardousSubstances:
+                  type: array
+                  items:
+                    type: object
+                    required: [substanceName, chemicalFormula, casNumber]
+                    properties:
+                      substanceName: { type: string }
+                      chemicalFormula: { type: string }
+                      casNumber: { type: string }
+
+            carbonFootprint:
+              type: object
+              required: [totalCarbonFootprint, measurementUnit, methodology]
+              properties:
+                totalCarbonFootprint: { type: number }
+                measurementUnit: { type: string }
+                methodology: { type: string }
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/auth/register:
+    post:
+      summary: Register user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, role]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password: { type: string }
+                role:
+                  type: string
+                  enum: [admin, user]
+      responses:
+        '201': { description: Created }
+        '400': { description: Bad request }
+
+  /api/auth/login:
+    post:
+      summary: Login and get JWT
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+        '401': { description: Unauthorized }
+
+  /api/passports:
+    post:
+      summary: Create battery passport (admin only)
+      tags: [Passport]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatteryPassport'
+      responses:
+        '201': { description: Passport created }
+        '403': { description: Forbidden }
+
+  /api/passports/{id}:
+    get:
+      summary: Get a passport (admin/user)
+      tags: [Passport]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+        '404': { description: Not found }
+
+    put:
+      summary: Update a passport (admin only)
+      tags: [Passport]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatteryPassport'
+      responses:
+        '200': { description: Passport updated }
+        '403': { description: Forbidden }
+
+    delete:
+      summary: Delete a passport (admin only)
+      tags: [Passport]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204': { description: Passport deleted }
+        '403': { description: Forbidden }
+
+  /api/documents/upload:
+    post:
+      summary: Upload document file
+      tags: [Document]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  docId: { type: string }
+                  fileName: { type: string }
+                  url: { type: string }
+                  createdAt:
+                    type: string
+                    format: date-time
+
+  /api/documents/{docId}:
+    get:
+      summary: Get download URL for a document
+      tags: [Document]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: docId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Download URL returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  downloadUrl: { type: string }
+
+    delete:
+      summary: Delete a document
+      tags: [Document]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: docId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: File deleted }
+
+tags:
+  - name: Auth
+  - name: Passport
+  - name: Document
