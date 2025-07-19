@@ -12,7 +12,7 @@ exports.createPassport = async (req, res) => {   //post route
         'data.generalInformation.batteryIdentifier': batteryIdentifier
       }); 
    
-    if(dataExists){
+    if(dataExists){    //already exists in db
       return res.status(409).json({ 
         message: "Battery information already exists"
      });

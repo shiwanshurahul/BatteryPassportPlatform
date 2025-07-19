@@ -1,5 +1,5 @@
 require('dotenv').config();
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');  //real-time email users
 
 // Configure a gmail transporter 
 const transporter = nodemailer.createTransport({

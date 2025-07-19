@@ -8,7 +8,7 @@ const { v4: uuidv4 } = require('uuid');
 
 //s3 file upload controller
 exports.uploadFile = [
-  upload.single('file'),
+  upload.single('file'),  //single file at once
   async (req, res) => {
     try {
       if (!req.file)  //no file provided
@@ -29,7 +29,7 @@ exports.uploadFile = [
       res.json({
         docId: doc._id,
         fileName: doc.fileName,
-        url: data.Location,    //link of the file on s3
+        url: data.Location,    //link of the file
         createdAt: doc.createdAt
       });
     } 
@@ -44,7 +44,7 @@ exports.uploadFile = [
 exports.getFile = async (req, res) => {
   try {
     const doc = await Document.findById(req.params.docId);
-    if (!doc) //not docid provided
+    if (!doc) //not provided docid
         return res.status(404).json({ 
           message: 'Link Not found'
         });

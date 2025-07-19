@@ -5,7 +5,7 @@ const connectDB = async () => {
     await mongoose.connect(process.env.MONGO_URI_STRING);
     console.log("MongoDB connected for (Passport Service)");
   } 
-  catch (err) {
+  catch (err) {   //connection setup failed with DB with given string
     console.error("MongoDB connection error:", err);
     process.exit(1);
   }
