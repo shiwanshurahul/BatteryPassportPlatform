@@ -11,14 +11,15 @@ const authenticate = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    req.user = decoded; // email, id, role
+    req.user = decoded; // set user in req
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
 
-const authorize = (roles = []) => {  //checking for specific role to protect routes e.g. admin only route
+//checking for specific role to protect routes e.g. admin only route
+const authorize = (roles = []) => { 
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ message: "Forbidden: Insufficient rights" });

@@ -24,13 +24,13 @@ An intelligent backend platform built with Node.js, Express, MongoDB, Kafka, Nod
 
 ### 3. **Document Service** (`localhost:5003`)
 - Upload/download/delete files (S3-compatible) 
-- Real time data upload, URL, on s3 storage
+- Real time data upload, URL, on s3 storage using Multer
 - Stores file metadata in MongoDB
 - Authenticated via JWT
 
 ### 4. **Notification Service** (`localhost:5004`)
 - Kafka consumer for passport events
-- simulates real-time notifications to email with Nodemailer
+- simulates real-time notifications to email with Nodemailer package
 
 ---
 
@@ -120,8 +120,9 @@ cd battery-passport-platform
  | Method         | EndPoint                 | Description      |
  | -------------- | -------------------------| -----------------|
  | POST	          |  /api/documents/upload	 | Upload file      |
- |GET	          |  /api/documents/:docId	 | Get download URL |
- |DELETE	      |  /api/documents/:docId	 | Delete file    |
+ |GET	            |  /api/documents/:docId	 | Get download URL |
+ |DELETE	        |  /api/documents/:docId	 | Delete file    |
 
- 
-#### Use Authorization: Bearer token header in protected routes.
+#### Use Authorization: Bearer token_value header in protected routes.
+
+### For more info on header and body view swagger API documentation sheet (yaml is provided in root).
